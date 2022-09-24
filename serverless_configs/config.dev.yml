@@ -1,0 +1,5 @@
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-python-requirements
+  - serverless-prune-plugin
+  - serverless-plugin-log-retention

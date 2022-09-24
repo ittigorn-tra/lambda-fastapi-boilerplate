@@ -1,0 +1,37 @@
+# serverless.yml
+
+service: lambda-fastapi-boilerplate
+useDotenv: true
+
+plugins: ${file(./serverless_configs/config.${self:custom.currentStage}.yaml):plugins}
+package:
+  exclude:
+    - node_modules/**
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
+    usePipenv: true
+  prune:
+    automatic: true
+    number: 10
+  currentStage: ${env:ENVIRONMENT}
+
+provider:
+  name: aws
+  runtime: python3.9
+  region: ap-southeast-1
+  stackName: lf-boilerplate-stack-${env:ENVIRONMENT}
+  environment:
+    ENVIRONMENT: ${env:ENVIRONMENT}
+  logs:
+    restApi: true
+
+functions:
+  api:
+    handler: main.handler
+    events:
+      - http:
+          path: /{proxy+}
+          method: ANY
+          integration: lambda-proxy
+    logRetentionInDays: ${opt:${env:LOG_RETENTION_API}, 3}
